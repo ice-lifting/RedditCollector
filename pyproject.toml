@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reddit-collector-local"
+version = "0.3.0"
+description = "MCP server for Reddit collection, local storage, search and reading"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["websocket-client>=1.8,<2", "mcp>=2.3,<3", "DrissionPage>=4,<5"]
+
+[project.scripts]
+reddit-collector-mcp = "reddit_browser.mcp_server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+reddit_browser = ["*.js", "storage/*.sql", "storage/migrations/*.sql"]

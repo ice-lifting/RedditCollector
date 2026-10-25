@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "reddit-collector": {
+      "command": "conda",
+      "args": ["run", "--no-capture-output", "-n", "webauto", "python", "-m", "reddit_browser"]
+    }
+  }
+}

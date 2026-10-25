@@ -1,0 +1,10 @@
+BEGIN IMMEDIATE;
+ALTER TABLE posts ADD COLUMN root_comments_status TEXT NOT NULL DEFAULT 'not_collected' CHECK (root_comments_status IN ('not_collected', 'partial', 'complete'));
+ALTER TABLE posts ADD COLUMN root_comments_collected_at TEXT;
+ALTER TABLE comments ADD COLUMN depth INTEGER CHECK (depth IS NULL OR depth >= 0);
+ALTER TABLE comments ADD COLUMN content_type TEXT;
+ALTER TABLE comments ADD COLUMN media_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE comments ADD COLUMN source_json_path TEXT;
+UPDATE comments SET depth=0 WHERE parent_comment_id IS NULL;
+PRAGMA user_version = 3;
+COMMIT;
