@@ -75,6 +75,8 @@ MCP 客户端进程需要能在 PATH 中找到 `conda`；只在终端执行过 `
 如果环境名称不同，修改配置中的 `webauto`。环境已经由客户端通过 PATH 选定时，也可使用 `command: "python"` 和 `args: ["-m", "reddit_browser"]`。
 从源码启动仅需在项目目录运行 `python server.py`；配置客户端时优先使用上面的已安装模块方式，避免依赖相对脚本路径和客户端工作目录。
 
+浏览器已启动但尚未打开 Reddit 时，可调用 `reddit_collector_open_reddit` 准备页面。它复用现有首页；没有首页时会将已有 Reddit 标签页导航到首页，或使用空白页/新建标签页。该工具不启动新 Chrome 进程，不采集、不下载、不创建数据库任务。搜索和社区采集仍只连接已有 Reddit 标签页，不自动导航。
+
 stdout 只传输 MCP JSON-RPC，日志写 stderr。一次只运行一个采集任务，离线读取不访问 Reddit。
 多页采集和媒体下载可能持续数分钟，请相应设置客户端工具调用超时。
 
@@ -83,6 +85,7 @@ stdout 只传输 MCP JSON-RPC，日志写 stderr。一次只运行一个采集�
 | 工具 | 功能 |
 | --- | --- |
 | `reddit_collector_list_tabs` | 列出已有 Reddit 标签页及 target_id |
+| `reddit_collector_open_reddit` | 在已有 Chrome 中打开/复用 Reddit 首页，返回 target_id；不采集、不入库 |
 | `reddit_search_posts` | 全站搜索、翻页、读取详情、保存文件并入库 |
 | `reddit_collect_community` | 按社区及排序逐页采集，每页保存并关联同一任务 |
 | `reddit_collect_home` | 保存当前首页已加载的帖子 |
@@ -144,8 +147,8 @@ stdout 只传输 MCP JSON-RPC，日志写 stderr。一次只运行一个采集�
 
 1. 在环境中运行 `python -m pip check`，确认依赖没有冲突。
 2. 确认 `http://127.0.0.1:9222/json/list` 可以打开，且列表中有 Reddit 标签页。
-3. 在 MCP 客户端重新加载服务，确认出现 `reddit_collector_list_tabs` 等 11 个工具。
-4. 先调用 `reddit_collector_list_tabs`，再以 `max_pages: 1` 执行一次搜索或社区采集。
+3. 在 MCP 客户端重新加载服务，确认出现 `reddit_collector_list_tabs` 等 12 个工具。
+4. 先调用 `reddit_collector_list_tabs`；没有 Reddit 标签页时调用 `reddit_collector_open_reddit`。把选定或返回的 `target_id` 传给搜索/社区采集，并以 `max_pages: 1` 先试一次。
 5. 根据工具返回路径打开 `preview.html`；使用 `reddit_database_search` 和 `reddit_database_read_post` 检查入库结果。
 
 数据库读取工具查询的是这台电脑当前配置的数据库。刚安装且尚未采集时，数据库可能还不存在，先执行一次保存入库的采集即可。
